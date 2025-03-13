@@ -10,7 +10,57 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    margin-top: 30px;
 }
 button:hover {
     background-color: #0056b3;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+}
+
+.dropbtn {
+    width: 100%;
+    background-color: #f1f1f1;
+    color: black;
+    padding: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropbtn::after {
+    content: " ▼";
+    float: right;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 100%;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    padding: 5px;
+}
+
+.dropdown-content label {
+    display: block;
+    padding: 5px;
+}
+
+.dropdown-content label:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-content input {
+    margin-right: 5px;
+}
+
+.dropdown.active .dropdown-content {
+    display: block;
 }

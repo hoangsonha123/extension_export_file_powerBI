@@ -1,4 +1,38 @@
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+    
+    if (request.action === "open_month_dropdown") {
+        let dropdown = document.querySelector(".slicer-dropdown-menu");
+
+        if (!dropdown) {
+            console.error("Không tìm thấy dropdown tháng!");
+            sendResponse({ success: false });
+            return;
+        }
+
+        if (!dropdown.classList.contains("open")) {
+            dropdown.click();
+            console.log("Đã mở dropdown...");
+        }
+
+        sendResponse({ success: true });
+    }
+
+    if (request.action === "get_months") {
+        try {
+            let monthElements = document.querySelectorAll(".slicerText");
+
+            let months = Array.from(monthElements).map(el => el.innerText.trim());
+
+            console.log("Các tháng lấy được:", months);
+            sendResponse({ success: true, months: months });
+
+        } catch (error) {
+            console.error("Lỗi khi lấy tháng:", error);
+            sendResponse({ success: false, months: [] });
+        }
+        return true;
+    }
+
     if (request.action === "get_token") {
         try {
             let keyResult = sessionStorage.key(1);
@@ -22,6 +56,27 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (request.action === "call_api") {
 
         try {
+            const selectedMonths = request.months || [
+                [
+                    {
+                        "Literal": {
+                            "Value": "'2025 Feb'"
+                        }
+                    }
+                ]
+            ];
+
+            const filtersDescription = `Applied filters:\nYear Month is ${selectedMonths.join(" or ")}\nRole Code is ROLE-A-SIP`;
+
+            const formattedMonths = selectedMonths.map(month => [
+                {
+                    "Literal": {
+                        "Value": `'${month}'`
+                    }
+                }
+            ]);
+
+
             const exportResponse = await fetch(
                 "https://wabi-north-europe-redirect.analysis.windows.net/export/xlsx",
                 {
@@ -189,22 +244,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                                             "Source": "d2"
                                                                         }
                                                                     },
-                                                                    "Property": "Line Manager Code"
+                                                                    "Property": "Partner Code"
                                                                 },
-                                                                "Name": "Dim_Employee.Line Manager Code",
-                                                                "NativeReferenceName": "Line Manager Code"
-                                                            },
-                                                            {
-                                                                "Column": {
-                                                                    "Expression": {
-                                                                        "SourceRef": {
-                                                                            "Source": "d2"
-                                                                        }
-                                                                    },
-                                                                    "Property": "Role Code"
-                                                                },
-                                                                "Name": "Dim_Employee.Role Code",
-                                                                "NativeReferenceName": "Role Code"
+                                                                "Name": "Dim_Employee.Partner Code",
+                                                                "NativeReferenceName": "Partner Code"
                                                             },
                                                             {
                                                                 "Column": {
@@ -222,13 +265,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                                 "Column": {
                                                                     "Expression": {
                                                                         "SourceRef": {
-                                                                            "Source": "d"
+                                                                            "Source": "d2"
                                                                         }
                                                                     },
-                                                                    "Property": "Customer"
+                                                                    "Property": "Role Code"
                                                                 },
-                                                                "Name": "Dim_Store.Customer",
-                                                                "NativeReferenceName": "Customer"
+                                                                "Name": "Dim_Employee.Role Code",
+                                                                "NativeReferenceName": "Role Code"
                                                             },
                                                             {
                                                                 "Column": {
@@ -241,6 +284,18 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                                 },
                                                                 "Name": "Dim_Store.Store Code",
                                                                 "NativeReferenceName": "Store Code"
+                                                            },
+                                                            {
+                                                                "Column": {
+                                                                    "Expression": {
+                                                                        "SourceRef": {
+                                                                            "Source": "d2"
+                                                                        }
+                                                                    },
+                                                                    "Property": "Line Manager Code"
+                                                                },
+                                                                "Name": "Dim_Employee.Line Manager Code",
+                                                                "NativeReferenceName": "Line Manager Code"
                                                             },
                                                             {
                                                                 "Column": {
@@ -271,22 +326,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                                                 }
                                                                             }
                                                                         ],
-                                                                        "Values": [
-                                                                            [
-                                                                                {
-                                                                                    "Literal": {
-                                                                                        "Value": "'2025 Mar'"
-                                                                                    }
-                                                                                }
-                                                                            ],
-                                                                            [
-                                                                                {
-                                                                                    "Literal": {
-                                                                                        "Value": "'2025 Feb'"
-                                                                                    }
-                                                                                }
-                                                                            ]
-                                                                        ]
+                                                                        "Values": formattedMonths
                                                                     }
                                                                 }
                                                             },
@@ -480,24 +520,24 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                             "Name": "%PJP"
                                                         },
                                                         {
-                                                            "QueryName": "Dim_Employee.Line Manager Code",
-                                                            "Name": "Line Manager Code"
-                                                        },
-                                                        {
-                                                            "QueryName": "Dim_Employee.Role Code",
-                                                            "Name": "Role Code"
+                                                            "QueryName": "Dim_Employee.Partner Code",
+                                                            "Name": "Partner Code"
                                                         },
                                                         {
                                                             "QueryName": "Dim_Employee.Employee Code",
                                                             "Name": "Employee Code"
                                                         },
                                                         {
-                                                            "QueryName": "Dim_Store.Customer",
-                                                            "Name": "Customer"
+                                                            "QueryName": "Dim_Employee.Role Code",
+                                                            "Name": "Role Code"
                                                         },
                                                         {
                                                             "QueryName": "Dim_Store.Store Code",
                                                             "Name": "Store Code"
+                                                        },
+                                                        {
+                                                            "QueryName": "Dim_Employee.Line Manager Code",
+                                                            "Name": "Line Manager Code"
                                                         },
                                                         {
                                                             "QueryName": "Dim_Store.KA",
@@ -505,22 +545,22 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                                                         }
                                                     ],
                                                     "Ordering": [
-                                                        0,
                                                         8,
-                                                        10,
-                                                        1,
+                                                        0,
                                                         9,
+                                                        1,
+                                                        10,
                                                         11,
-                                                        12,
                                                         2,
                                                         3,
                                                         4,
                                                         5,
                                                         6,
                                                         7,
+                                                        12,
                                                         13
                                                     ],
-                                                    "FiltersDescription": "Applied filters:\nYear Month is 2025 Mar or 2025 Feb\nRole Code is ROLE-A-SIP"
+                                                    "FiltersDescription": filtersDescription
                                                 }
                                             }
                                         ]
