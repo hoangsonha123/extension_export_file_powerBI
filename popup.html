@@ -6,23 +6,14 @@
         <title>Chọn tháng</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
-        <!-- <h3>Chọn tháng:</h3>
-        <div class="dropdown">
-            <button class="dropbtn">Chọn tháng</button>
-            <div class="dropdown-content">
-                <label><input type="checkbox" value="2025 Feb"> 2025 Feb</label>
-                <label><input type="checkbox" value="2025 Mar"> 2025 Mar</label>
-                <label><input type="checkbox" value="2025 Apr"> 2025 Apr</label>
-            </div>
-        </div> -->
+   <body>
+ <h3>Power BI Token</h3>
+    <textarea id="tokenBox" readonly></textarea><br/>
+    <button id="getTokenBtn">Lấy Token</button>
+    <button id="copyBtn">Copy</button>
+    <div id="notification"></div>
 
-        <h3>Chọn tháng V2:</h3>
-        <div id="monthDropdown"></div>
-
-        <button id="exportBtn">Xuất file Excel</button>
-
-        <script src="popup.js"></script>
+    <script src="popup.js"></script>
     </body>
 </html>
 
