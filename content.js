@@ -4,7 +4,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             const keys = Object.keys(sessionStorage);
             
-            const tokenKey = keys.find(key => key.includes("token"));
+            const tokenKey = keys.find(key =>
+                key.includes("https://analysis.windows.net/powerbi/api/user_impersonation")
+            );
             if (!tokenKey) {
                 throw new Error("Không tìm thấy token trong sessionStorage");
             }
